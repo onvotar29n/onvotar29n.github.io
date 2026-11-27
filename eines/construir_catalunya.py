@@ -63,12 +63,13 @@ def nom_via(tipus, llarg):
     part = part.replace("' ", "'")
     part = {" l'": " de l'", " la": " de la", " les": " de les", " el": " del", " els": " dels"}.get(part, part)
     T = t[:1].upper() + t[1:]
-    sep = "" if part.endswith("'") else " "
     llarg = re.sub(r"^C/\s*", "", llarg)
     # Lleida i altres: la partícula va davant del nom ('DEL CARME', "DE L'ESTACIO")
-    mp = re.match(r"^(DE LA|DE LES|DE L'|DELS|DEL|DE|D')\s*(\S.*)$", llarg)
+    # 'DESCARTES' o 'DELICIES' no porten partícula: cal un espai després de DE/DEL/DELS
+    mp = re.match(r"^(DE L'|D')\s*(\S.*)$", llarg) or re.match(r"^(DE LA|DE LES|DELS|DEL|DE)\s+(\S.*)$", llarg)
     if mp and not part and t:
         part, llarg = " " + mp.group(1).lower(), mp.group(2)
+    sep = "" if part.endswith("'") else " "
     nb = bonic(llarg)
     if t and norm_txt(nb) == norm_txt(T):
         return T
