@@ -458,9 +458,9 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
     if(!chosen){ var s=r.list; if(!s.length){showErr("<b>No trobem aquesta adreça a Catalunya.</b> Revisa com l'has escrit i afegeix el municipi al final.");inC.focus();return}
       // nom exacte: es tria sol, tret que sigui una casa sense carrer i hi hagi altres opcions (llavors tria la persona)
       var ex=s.filter(function(x){return x.full===norm(alies(r.street))});
-      // el primer de la llista (Barcelona va davant si no s'escriu municipi) guanya si és el mateix carrer
-      // encara que s'escrigui diferent ('Carrer de Descartes' = 'Carrer Descartes')
-      var k0=key(alies(r.street)), primer=!s[0].sc&&key(s[0].n)===k0;
+      // sense municipi, Barcelona va davant: si el primer és el mateix carrer de Barcelona escrit diferent
+      // ('Carrer de Descartes' = 'Carrer Descartes'), guanya a un nom exacte d'un altre municipi
+      var k0=key(alies(r.street)), primer=!s[0].sc&&key(s[0].n)===k0&&muniOf(s[0]).code==="019"&&muniOf(ex[0]||s[0]).code!=="019";
       if(s.length===1) chosen=s[0];
       else if(ex.length===1){ if(!ex[0].sc) chosen=primer?s[0]:ex[0]; }
       else if(key(s[0].n)===k0) chosen=s[0];
