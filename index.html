@@ -119,6 +119,11 @@ label{display:block;font-weight:700;font-size:14px;letter-spacing:.02em;text-tra
 .alt ul{margin:8px 0 0;padding-left:18px}
 footer{text-align:center;font-size:12.5px;color:var(--muted);padding:26px 16px calc(20px + env(safe-area-inset-bottom))}
 footer .by{opacity:.85}
+.pag{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.privinfo{width:calc(100% - 32px);max-width:488px;margin:0 auto;text-align:left;font-size:12.5px;line-height:1.5;color:var(--muted);border-top:1px solid var(--line);padding:16px 0 calc(28px + env(safe-area-inset-bottom))}
+.privinfo h2{font-size:14px;font-weight:700;margin:0 0 8px;color:var(--muted)}
+.privinfo p{margin:0 0 6px}.privinfo p:last-child{margin:0}
+.privinfo a{color:inherit}
 body.amb-res #form{display:none}
 @media (min-width:900px){
   body.amb-res main{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1040px;align-items:start}
@@ -181,6 +186,7 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
 </style>
 </head>
 <body>
+<div class="pag">
 <header class="hero">
   <svg class="urna" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 <defs><clipPath id="boca"><rect x="0" y="-40" width="64" height="66"/></clipPath></defs><g clip-path="url(#boca)"><g class="pap">    <path d="M24 26V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v19" fill="currentColor" fill-opacity=".35"/>
@@ -219,9 +225,15 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
   <section class="card" id="res" aria-live="polite"></section>
 </main>
 
-<footer>
-  <div><span id="font">Eleccions 29N · Catalunya · Dades: INE, Cens Electoral i BOP</span> · <span class="by">Elaborat per Jaume Oliva Sala</span></div>
-</footer>
+</div>
+<section class="privinfo"><h2>Informació sobre privacitat</h2>
+    <p>Aquesta aplicació, facilitada per Junts per Catalunya, permet localitzar la mesa i el col·legi electoral a partir de l'adreça i la inicial del primer cognom.</p>
+    <p>La consulta es realitza exclusivament al navegador del dispositiu, sense transmetre ni emmagatzemar les dades introduïdes en cap servidor.</p>
+    <p>Fonts d'informació: carrerer electoral de l'INE (juny de 2026) i publicacions oficials de meses i locals electorals del BOP.</p>
+    <p>Aquesta web no utilitza galetes (cookies) ni eines d'analítica.</p>
+    <p>L'aplicació té caràcter informatiu i no substitueix els canals oficials de consulta de l'Oficina del Cens Electoral.</p>
+    <p>Contacte del delegat de protecció de dades: <a href="mailto:dpd@junts.cat">dpd@junts.cat</a></p>
+</section>
 
 <script src="qrcode.js"></script>
 <script>
@@ -256,7 +268,7 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
       var sc={}; (m[3]||[]).forEach(function(i){sc[i]=1}); // cases i finques sense carrer ni número
       m[2].forEach(function(nom,pos){streets.push({n:nom,k:key(nom),full:norm(nom),mi:mi,pos:pos,sc:!!sc[pos]})});
     });
-    if(d.font) $("font").textContent=d.font;
+    if(d.font&&$("font")) $("font").textContent=d.font;
     carrega("019").then(function(){ if(inC.value) render(); });
     fromUrl();
   }).catch(function(){showErr("No s'han pogut carregar les dades. Torna-ho a provar d'aquí a una estona.")});
