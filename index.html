@@ -348,7 +348,16 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
         if(f2&&f2.length){ var st2=wf.slice(n2).join(" "), l2=search(st2,f2); if(l2.length){ street=st2; filter=f2; } }
       }
     }
-    return {p:p,street:street,list:search(street,filter)};
+    var list=search(street,filter);
+    if(!filter&&!list.length){
+      // municipi a mig escriure: 'ramon muntaner sant' -> municipis que comencen per 'sant'
+      var wp=street.split(/\s+/);
+      for(var n3=Math.min(4,wp.length-1);n3>=1&&!list.length;n3--){
+        var f3=findMuni(wp.slice(-n3).join(" "),false);
+        if(f3&&f3.length){ var l3=search(wp.slice(0,-n3).join(" "),f3); if(l3.length){ street=wp.slice(0,-n3).join(" "); filter=f3; list=l3; } }
+      }
+    }
+    return {p:p,street:street,list:list};
   }
   function hilite(name,q){
     var k=(key(q)||norm(q)).split(" ")[0]; if(!k) return esc(name);
