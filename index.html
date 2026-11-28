@@ -291,7 +291,10 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
     "miami platja":"Mont-roig del Camp","segur de calafell":"Calafell","empuriabrava":"Castelló d'Empúries","l estartit":"Torroella de Montgrí","estartit":"Torroella de Montgrí",
     "coma ruga":"El Vendrell","comarruga":"El Vendrell","vilafortuny":"Cambrils","sant antoni de calonge":"Calonge i Sant Antoni","llerona":"Les Franqueses del Vallès",
     "corro d avall":"Les Franqueses del Vallès","palaudaries":"Lliçà d'Amunt","bonmati":"Sant Julià del Llor i Bonmatí"};
-  function emd(t){ var k=norm(t).replace(/^(a|de|d|en) /,""); return EMD[k]||t; }
+  // també a mig escriure ('Valldorei'): si les lletres (5 o més) només encaixen amb un nom de la llista
+  function emd(t){ var k=norm(t).replace(/^(a|de|d|en) /,""); if(EMD[k]) return EMD[k];
+    if(k.length<5) return t; var ms={}; Object.keys(EMD).forEach(function(x){ if(x.indexOf(k)===0) ms[EMD[x]]=1 });
+    var l=Object.keys(ms); return l.length===1?l[0]:t; }
   // Municipi escrit a l'adreça: "Major 5 Vic", "Rambla 12, Sabadell"
   function findMuni(text,exact){
     var t=alies(text).replace(/\b\d{5}\b/g," ").replace(/\s+/g," ").trim().replace(/^(a|de|d|en) /,""), k=key(t), out=[];
