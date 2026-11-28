@@ -244,7 +244,10 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
   // Exemple de la casella d'adreça: un carrer o plaça de l'1 d'Octubre, a l'atzar a cada visita
   var EXEMPLES=["Carrer U d'Octubre, 2, El Vendrell","Plaça 1 d'Octubre, 1, Tortosa","Plaça U d'Octubre, 1, El Masnou","Plaça 1 d'Octubre, 1, Sant Celoni",
     "Plaça 1 d'Octubre, 1, Canet de Mar","Plaça de l'1 d'Octubre, 1, Piera","Avinguda 1 d'Octubre, 3, Deltebre","Plaça 1 d'Octubre, 1, Sentmenat",
-    "Plaça 1 d'Octubre, 4, Tona","Carrer 1 d'Octubre, 2, Cervera"];
+    "Plaça 1 d'Octubre, 4, Tona","Carrer 1 d'Octubre, 2, Cervera","Plaça de l'U d'Octubre, 1, Olot","Avinguda 1 d'Octubre, 10, Palafrugell",
+    "Carrer U d'Octubre, 2, Sant Quirze del Vallès","Plaça de l'1 d'Octubre de 2017, 3, Calella","Carrer de l'1 d'Octubre, 1, Argentona",
+    "Plaça Mercat 1 d'Octubre de 2017, 6, Sant Feliu de Guíxols","Carrer de l'1 d'Octubre de 2017, 1, Tàrrega",
+    "Carrer 1 d'Octubre de 2017, 2, Torroella de Montgrí","Avinguda del Primer d'Octubre, 1, Riudoms"];
   function exemple(){return EXEMPLES[Math.floor(Math.random()*EXEMPLES.length)]}
   var inC=$("carrer"), inG=$("cog"), sug=$("sug"), err=$("err"), res=$("res"), form=$("form");
   inC.placeholder=exemple();
@@ -318,7 +321,8 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
   var DESPRES=/^(?:bis|ter|esc(?:ala)?\.?|escalera|pis|piso|planta|porta|puerta|bxs?\.?|baixos|bajos?|atic|àtic|atico|ático|pral\.?|principal|entl?\.?|entresol|dreta|esquerra|dr\.?|esq\.?|izq(?:da)?\.?|izquierda|dcha\.?|derecha|\d{1,2}\s?(?:r|n|t|a|o|º|ª|er|on|rt|é|e)?\.?)(?=[\s,]|$)/i;
   function treuDespres(t){ var r=t, ant; do{ ant=r; r=r.replace(DESPRES,"").replace(/^[\s,º°ª.\-]+/,""); }while(r!==ant&&r); return r; }
   function parse(q){
-    q=(q||"").replace(/([a-zA-ZÀ-ÿ])(\d)/g,"$1 $2").replace(/\b\d{5}\b/g," ").replace(/\s+/g," ").replace(/ ,/g,",");
+    // l'any d'una data forma part del nom ('Plaça de l'1 d'Octubre de 2017, 3'): no és el número
+    q=(q||"").replace(/((?:gener|febrer|mar[çc]|abril|maig|juny|juliol|agost|setembre|octubre|novembre|desembre)\s+de)\s+(\d{4})/gi,"$1_$2").replace(/([a-zA-ZÀ-ÿ])(\d)/g,"$1 $2").replace(/\b\d{5}\b/g," ").replace(/\s+/g," ").replace(/ ,/g,",");
     // sense número: s/n, s.n., sn, s n
     var sn=q.match(/^(.*?)[\s,]+(?:s\s?\/\s?n|s\.\s?n\.?|sn|s n|sin n[uú]mero|sense n[uú]mero)(?=[\s,.]|$)[\s,.]*(.*)$/i);
     if(sn && sn[1].trim()) return {street:sn[1].replace(/[\s,]+$/,""),num:0,sn:true,lletra:"",muni:treuDespres((sn[2]||"").trim())||null};
