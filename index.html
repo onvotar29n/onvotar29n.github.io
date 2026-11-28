@@ -278,6 +278,14 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
   }
   function muniOf(s){return MUNIS[s.mi]}
 
+  // EMD i nuclis grans: si s'escriuen després del número, es busca al seu municipi
+  // ('Sant Francesc 10 Valldoreix' = 'Sant Francesc 10 Sant Cugat del Vallès')
+  var EMD={"valldoreix":"Sant Cugat del Vallès","mira sol":"Sant Cugat del Vallès","mirasol":"Sant Cugat del Vallès","bellaterra":"Cerdanyola del Vallès",
+    "jesus":"Tortosa","campredo":"Tortosa","bitem":"Tortosa","els reguers":"Tortosa","reguers":"Tortosa",
+    "miami platja":"Mont-roig del Camp","segur de calafell":"Calafell","empuriabrava":"Castelló d'Empúries","l estartit":"Torroella de Montgrí","estartit":"Torroella de Montgrí",
+    "coma ruga":"El Vendrell","comarruga":"El Vendrell","vilafortuny":"Cambrils","sant antoni de calonge":"Calonge i Sant Antoni","llerona":"Les Franqueses del Vallès",
+    "corro d avall":"Les Franqueses del Vallès","palaudaries":"Lliçà d'Amunt","bonmati":"Sant Julià del Llor i Bonmatí"};
+  function emd(t){ var k=norm(t).replace(/^(a|de|d|en) /,""); return EMD[k]||t; }
   // Municipi escrit a l'adreça: "Major 5 Vic", "Rambla 12, Sabadell"
   function findMuni(text,exact){
     var t=alies(text).replace(/\b\d{5}\b/g," ").replace(/\s+/g," ").trim().replace(/^(a|de|d|en) /,""), k=key(t), out=[];
@@ -341,7 +349,7 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
   // Interpreta el text: carrer, número i, si n'hi ha, municipi
   function interpret(q){
     var p=parse(q), filter=null, street=p.street;
-    if(p.muni){ filter=findMuni(p.muni,false); if(!filter.length) return {p:p,list:[],badMuni:p.muni}; }
+    if(p.muni){ filter=findMuni(emd(p.muni),false); if(!filter.length) return {p:p,list:[],badMuni:p.muni}; }
     else {
       var ws=street.split(/\s+/);
       for(var n=Math.min(4,ws.length-1);n>=1&&!filter;n--){
