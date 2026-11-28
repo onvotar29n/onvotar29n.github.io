@@ -67,7 +67,7 @@ label{display:block;font-weight:700;font-size:14px;letter-spacing:.02em;text-tra
   background:var(--black);box-shadow:0 10px 24px -10px rgba(20,20,19,.6);transition:transform .1s,filter .15s;margin-top:6px}
 .btn:active{transform:scale(.98)}
 .btn:disabled{filter:grayscale(.6) opacity(.55);box-shadow:none;cursor:not-allowed}
-#carrer::placeholder{font-size:16px}
+#carrer::placeholder{font-size:14px}
 .inp.inicial{width:96px;text-align:center;font-size:24px;font-weight:700;text-transform:uppercase}
 .inp.inicial::placeholder{font-size:17px;font-weight:400;text-transform:none}
 .ajuda{display:block;margin:6px 2px 0;font-size:13.5px;color:var(--muted)}
@@ -206,7 +206,7 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
     <form id="f" autocomplete="off" novalidate>
       <div class="field">
         <label for="carrer">Adreça</label>
-        <input class="inp" id="carrer" type="text" inputmode="search" enterkeyhint="next" placeholder="Carrer de Muntaner, 240" autocapitalize="words" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="sug" aria-autocomplete="list">
+        <input class="inp" id="carrer" type="text" inputmode="search" enterkeyhint="next" placeholder="Carrer de Muntaner, 240, Barcelona" autocapitalize="words" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="sug" aria-autocomplete="list">
         <ul class="sug" id="sug" role="listbox"></ul>
       </div>
       <div class="field">
@@ -282,7 +282,9 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
   function findMuni(text,exact){
     var t=alies(text).replace(/\b\d{5}\b/g," ").replace(/\s+/g," ").trim().replace(/^(a|de|d|en) /,""), k=key(t), out=[];
     if(!t) return null;
-    MUNIS.forEach(function(m,mi){ if(m.n===t||(k&&m.k===k)) out.push(mi) });
+    // nom exacte primer: 'La Riera de Gaià' no ha de portar també a Gaià ('riera' és un tipus de via)
+    MUNIS.forEach(function(m,mi){ if(m.n===t) out.push(mi) });
+    if(!out.length) MUNIS.forEach(function(m,mi){ if(k&&m.k===k) out.push(mi) });
     if(!out.length){
       // 'Pals Girona', 'Vic (Barcelona)': treu la província del final
       var t2=t.replace(/ (barcelona|girona|lleida|tarragona)$/,"");
@@ -303,15 +305,22 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
     // sense número: s/n, s.n., sn, s n
     var sn=q.match(/^(.*?)[\s,]+(?:s\s?\/\s?n|s\.\s?n\.?|sn|s n|sin n[uú]mero|sense n[uú]mero)(?=[\s,.]|$)[\s,.]*(.*)$/i);
     if(sn && sn[1].trim()) return {street:sn[1].replace(/[\s,]+$/,""),num:0,sn:true,lletra:"",muni:treuDespres((sn[2]||"").trim())||null};
-    var m=q.match(/^(.*?)[\s,]+(?:n[ºo°.]?\s*)?(\d{1,4})(?:\s*[-–]\s*(\d{1,4}))?(?:\s?([a-zA-Z])(?![a-zA-ZÀ-ÿ']))?(?:[\s,]+(.*))?$/);
+    var m=q.match(/^(.*?)[\s,]+(?:n[ºo°.]?\s*)?(\d{1,4})(?!\s*(?:d['’]\s*|de\s+)(?:gener|febrer|mar[çc]|abril|maig|juny|juliol|agost|setembre|octubre|novembre|desembre))(?:\s*[-–]\s*(\d{1,4}))?(?:\s?([a-zA-Z])(?![a-zA-ZÀ-ÿ']))?(?:[\s,]+(.*))?$/i);
     if(m && m[1].trim()) return {street:m[1].replace(/[\s,]+$/,""),num:parseInt(m[2],10),num2:m[3]?parseInt(m[3],10):null,
       lletra:(m[4]||"").toUpperCase(),muni:treuDespres((m[5]||"").trim())||null};
     var c=q.indexOf(",");
     if(c>0 && q.slice(c+1).trim()) return {street:q.slice(0,c).trim(),num:null,muni:q.slice(c+1).trim()};
     return {street:q.replace(/[\s,]+$/,""),num:null,muni:null};
   }
+  // 'San Juan', 'Nueva Zelanda': es busca amb els àlies (san -> sant) i també tal com està escrit
   function search(q,filter){
-    var tw=tipusDe(q); q=alies(q);
+    var r=search1(q,filter,false); if(alies(q)===norm(q)) return r;
+    // el nom tal com està escrit va davant si coincideix exactament ('Carrer Iglesia')
+    var r2=search1(q,filter,true), f=norm(q);
+    return r2.filter(function(x){return x.full===f}).concat(r).concat(r2).filter(function(x,i,a){return a.indexOf(x)===i}).slice(0,8);
+  }
+  function search1(q,filter,raw){
+    var tw=tipusDe(q); if(!raw) q=alies(q);
     var k=key(q), f=norm(q); if(!f) return [];
     var toks=(k||f).split(" "), out=[], set=null;
     if(filter){set={};filter.forEach(function(x){set[x]=1})}
@@ -586,7 +595,7 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
   }
   function reveal(){
     document.body.classList.add("amb-res"); res.classList.add("on");
-    $("again").addEventListener("click",function(){if(location.search)history.replaceState(null,"",location.pathname);res.classList.remove("on");document.body.classList.remove("amb-res");inC.value="";chosen=null;inC.classList.remove("ok");inC.placeholder="Carrer de Muntaner, 240";inG.value="";inC.focus();window.scrollTo({top:0,behavior:"smooth"})});
+    $("again").addEventListener("click",function(){if(location.search)history.replaceState(null,"",location.pathname);res.classList.remove("on");document.body.classList.remove("amb-res");inC.value="";chosen=null;inC.classList.remove("ok");inC.placeholder="Carrer de Muntaner, 240, Barcelona";inG.value="";inC.focus();window.scrollTo({top:0,behavior:"smooth"})});
     window.scrollTo({top:0,behavior:"smooth"});
   }
 })();
