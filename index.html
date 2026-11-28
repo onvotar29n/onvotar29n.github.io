@@ -206,7 +206,7 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
     <form id="f" autocomplete="off" novalidate>
       <div class="field">
         <label for="carrer">Adreça</label>
-        <input class="inp" id="carrer" type="text" inputmode="search" enterkeyhint="next" placeholder="Carrer de Muntaner, 240, Barcelona" autocapitalize="words" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="sug" aria-autocomplete="list">
+        <input class="inp" id="carrer" type="text" inputmode="search" enterkeyhint="next" placeholder="Plaça 1 d'Octubre, 1, Tortosa" autocapitalize="words" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="sug" aria-autocomplete="list">
         <ul class="sug" id="sug" role="listbox"></ul>
       </div>
       <div class="field">
@@ -241,7 +241,13 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
   "use strict";
   var IDX=null, MUNIS=[], streets=[], M={}, chosen=null, act=-1, list=[], curNum=null;
   var $=function(id){return document.getElementById(id)};
+  // Exemple de la casella d'adreça: un carrer o plaça de l'1 d'Octubre, a l'atzar a cada visita
+  var EXEMPLES=["Carrer U d'Octubre, 2, El Vendrell","Plaça 1 d'Octubre, 1, Tortosa","Plaça U d'Octubre, 1, El Masnou","Plaça 1 d'Octubre, 1, Sant Celoni",
+    "Plaça 1 d'Octubre, 1, Canet de Mar","Plaça de l'1 d'Octubre, 1, Piera","Avinguda 1 d'Octubre, 3, Deltebre","Plaça 1 d'Octubre, 1, Sentmenat",
+    "Plaça 1 d'Octubre, 4, Tona","Carrer 1 d'Octubre, 2, Cervera"];
+  function exemple(){return EXEMPLES[Math.floor(Math.random()*EXEMPLES.length)]}
   var inC=$("carrer"), inG=$("cog"), sug=$("sug"), err=$("err"), res=$("res"), form=$("form");
+  inC.placeholder=exemple();
 
   // Normalitza: minúscules, sense accents, sense puntuació
   function norm(s){return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/l[·.]l/g,"l").replace(/[^a-z0-9ñç ]+/g," ").replace(/\s+/g," ").trim()}
@@ -603,7 +609,7 @@ main .card,.wrap .card{animation:up .6s .22s cubic-bezier(.2,.8,.2,1) both}
   }
   function reveal(){
     document.body.classList.add("amb-res"); res.classList.add("on");
-    $("again").addEventListener("click",function(){if(location.search)history.replaceState(null,"",location.pathname);res.classList.remove("on");document.body.classList.remove("amb-res");inC.value="";chosen=null;inC.classList.remove("ok");inC.placeholder="Carrer de Muntaner, 240, Barcelona";inG.value="";inC.focus();window.scrollTo({top:0,behavior:"smooth"})});
+    $("again").addEventListener("click",function(){if(location.search)history.replaceState(null,"",location.pathname);res.classList.remove("on");document.body.classList.remove("amb-res");inC.value="";chosen=null;inC.classList.remove("ok");inC.placeholder=exemple();inG.value="";inC.focus();window.scrollTo({top:0,behavior:"smooth"})});
     window.scrollTo({top:0,behavior:"smooth"});
   }
 })();
